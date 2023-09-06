@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+import django_heroku
+
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xyh(1+-*mp+h3u5e(qy0f49q$v31-3i1gn$bm+(@9j5xcheyt@'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://logion-backend-9dd1f22b3713.herokuapp.com']
 
 
 # Application definition
@@ -37,9 +43,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'logion.apps.LogionConfig',
+    'server',
+    'corsheaders',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
+    'server.middleware.Auth0Middleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -70,15 +82,60 @@ TEMPLATES = [
 WSGI_APPLICATION = 'server.wsgi.application'
 
 
+CSP_FRAME_ANCESTORS = "'none'"
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    # 'EXCEPTION_HANDLER': 'messages_api.views.api_exception_handler',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTTokenUserAuthentication',
+    ],
+}
+
+# JWT
+
+AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
+AUTH0_AUDIENCE = os.environ.get('AUTH0_AUDIENCE')
+
+SIMPLE_JWT = {
+    'ALGORITHM': 'RS256',
+    'JWK_URL': f'https://{AUTH0_DOMAIN}/.well-known/jwks.json',
+    'AUDIENCE': AUTH0_AUDIENCE,
+    'ISSUER': f'https://{AUTH0_DOMAIN}/',
+    'USER_ID_CLAIM': 'sub',
+    'AUTH_TOKEN_CLASSES': ('authz.tokens.Auth0Token',),
+}
+DATA_UPLOAD_MAX_MEMORY_SIZE = 524288000
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": "logiondb2",
+#     }
+# }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# if not DEBUG: 
+#     name = os.environ.get('DATABASE')
+#     user = os.environ.get('USER')
+#     password = os.environ.get('PASSWORD')
+#     host = os.environ.get('HOST')
+#     port = os.environ.get('PORT')
+
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             "NAME": name,
+#             "USER": user,
+#             "PASSWORD": password,
+#             "HOST": host,
+#             "PORT": port,
+
+#         }
+#     }
 
 
 # Password validation
@@ -105,7 +162,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
@@ -121,3 +178,26 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
+
+
+AUTH_USER_MODEL = 'logion.CustomUser'
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': '<DATABASE>',
+        'USER': '<USER>',
+        'PASSWORD': '<PASSWORD>',
+        'HOST': '<HOST>',
+        'PORT': '5432',
+    }
+}
+  
+# Optional section to include if 
+# you want to include static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+django_heroku.settings(locals())
