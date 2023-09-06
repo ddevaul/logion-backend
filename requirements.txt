@@ -34,7 +34,10 @@ safetensors==0.3.3
 sqlparse==0.4.4
 sympy==1.12
 tokenizers==0.13.3
-torch==2.0.1
+-f https://download.pytorch.org/whl/torch_stable.html
+torch==1.8.1+cpu
+torchvision==0.9.1+cpu
+# torch==2.0.1
 tqdm==4.66.1
 transformers==4.32.1
 typing_extensions==4.7.1
