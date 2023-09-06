@@ -105,7 +105,7 @@ class GetSuggestionView(APIView):
             response = requests.post(API_URL, headers=headers, json=payload)
             return response.json()
         output = query({
-            "inputs": f'{text1}[MASK]{text2}',
+            "inputs": f'{text1}[MASK][MASK][MASK][MASK][MASK]{text2}',
         })
         print(output)
         # strings = all_possibilities(text1, text2, num_tokens=3, right=False)
