@@ -163,7 +163,11 @@ class LoginUserView(APIView):
         try:
             u = CustomUser.objects.get(user_id=result["sub"])
         except CustomUser.DoesNotExist:
-            u = CustomUser()
+            u = CustomUser.objects.filter(email=result["email"]).first()
+            if u is None:
+                u = CustomUser()
+                u.username=result["nickname"]
+                u.email = result["email"]
             u.user_id = result["sub"]
             u.save()
             return HttpResponse('User Created')
