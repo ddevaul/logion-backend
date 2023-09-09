@@ -374,7 +374,8 @@ def all_possibilities(text1, text2, num_tokens, right=False):
 
   return strings
 
-
+def get_results(text1, text2, og_text, num_toks):
+  pass
 
 
 # import sagemaker
