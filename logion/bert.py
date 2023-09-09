@@ -1,5 +1,5 @@
 # # # -*- coding: utf-8 -*-
-# # # from transformers import BertTokenizer, BertForMaskedLM
+from transformers import BertTokenizer, BertForMaskedLM
 import torch
 tokenizer = BertTokenizer.from_pretrained("cabrooks/LOGION-50k_wordpiece")
 model = BertForMaskedLM.from_pretrained("cabrooks/LOGION-50k_wordpiece")

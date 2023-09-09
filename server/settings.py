@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
-import django_heroku
+# import django_heroku
 
 
 load_dotenv()
@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['https://logion-backend-9dd1f22b3713.herokuapp.com']
+ALLOWED_HOSTS = ['https://logion-backend-9dd1f22b3713.herokuapp.com', 'ec2-100-27-5-254.compute-1.amazonaws.com']
 
 
 # Application definition
