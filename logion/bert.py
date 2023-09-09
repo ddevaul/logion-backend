@@ -5,8 +5,8 @@
 # # model = BertForMaskedLM.from_pretrained("cabrooks/LOGION-50k_wordpiece")
 # # sm = torch.nn.Softmax(dim=1) # In order to construct word probabilities, we will employ softmax.
 # # torch.set_grad_enabled(False) # Since we are not training, we disable gradient calculation.
-# import re
-# import requests
+import re
+import requests
 
 # # Get top k suggestions for each masked position:
 # def argkmax(array, k, prefix='', dim=0): # Return indices of the 1st through kth largest values of an array, given prefix
@@ -181,86 +181,163 @@
 #   strings = display_word(strings)
 #   return strings
 
+import unicodedata as ud
 
-# def clean_text(text):
 
-#   # lunate sigmas at the end of the word
-#   text = re.sub(r'c(?!\w)', 'ς', text)
-#   # all remaining lunate sigmas
-#   text = re.sub(r'ϲ', 'σ', text)
-#   text = re.sub(r'Ϲ', 'Σ', text)
+def clean_text(text):
 
-#   # remove titles should I do this?
+  # acute with breathing
+  # α
+  text = re.sub('[\u1F00-\u1F07]', 'α', text)
+  # Α
+  text = re.sub('[\u1F08-\u1F0F]', 'A', text)
+  # ε
+  text = re.sub('[\u1F10-\u1F15]', 'ε', text)
+  # Ε
+  text = re.sub('[\u1F18-\u1F1D]', 'Ε', text)
+  # η
+  text = re.sub('[\u1F20-\u1F27]', 'η', text)
+  # Η
+  text = re.sub('[\u1F28-\u1F2F]', 'Η', text)
+  # ι
+  text = re.sub('[\u1F30-\u1F37]', 'ι', text)
+  # Ι
+  text = re.sub('[\u1F38-\u1F3F]', 'Ι', text)
+  # ο
+  text = re.sub('[\u1F40-\u1F45]', 'ο', text)
+  # Ο
+  text = re.sub('[\u1F48-\u1F4D]', 'Ι', text)
+  # υ
+  text = re.sub('[\u1F50-\u1F55]', 'υ', text)
+  # Υ
+  text = re.sub('[\u1F58-\u1F5D]', 'Υ', text)
+  # ω
+  text = re.sub('[\u1F60-\u1F67]', 'ω', text)
+  # Ω
+  text = re.sub('[\u1F68-\u1F6F]', 'Ω', text)
+  # α
+  text = re.sub('[\u1F70-\u1F71]', 'α', text)
+  # ε
+  text = re.sub('[\u1F72-\u1F73]', 'ε', text)
+  # η
+  text = re.sub('[\u1F74-\u1F75]', 'η', text)
+  # ι
+  text = re.sub('[\u1F76-\u1F77]', 'ι', text)
+  # ο
+  text = re.sub('[\u1F78-\u1F79]', 'ο', text)
+  # υ
+  text = re.sub('[\u1F7A-\u1F7B]', 'υ', text)
+  # ω
+  text = re.sub('[\u1F7C-\u1F7D]', 'ω', text)
+  # ᾳ
+  text = re.sub('[\u1F80-\u1F87]', 'ᾳ', text)
+  # ῃ
+  text = re.sub('[\u1F90-\u1F97]', 'ῃ', text)
+  # ῳ
+  text = re.sub('[\u1FA0-\u1FA7]', 'ῃ', text)
+  # ᾳ
+  text = re.sub('[\u1FB0-\u1FB7]', 'ᾳ', text)
+  # ῃ
+  text = re.sub('[\u1FC2-\u1FC7]', 'ῃ', text)
+  # ι
+  text = re.sub('[\u1FD0-\u1FD7]', 'ι', text)
+  # υ
+  text = re.sub('[\u1FE0-\u1FE3]', 'υ', text)
+  # ρ
+  text = re.sub('[\u1FE4-\u1FE5]', 'ρ', text)
+  # υ
+  text = re.sub('[\u1FE6-\u1FE7]', 'υ', text)
+  # Υ
+  text = re.sub('[\u1FE8-\u1FEB]', 'Υ', text)
+  # Ρ
+  text = re.sub('[\u1FEC]', 'Ρ', text)
+  # ῳ
+  text = re.sub('[\u1FF0-\u1FF7]', 'ῳ', text)
+  # Ο
+  text = re.sub('[\u1FF8-\u1FF9]', 'Ο', text)
+  # Ω
+  text = re.sub('[\u1FFA-\u1FFB]', 'Ω', text)
 
-#   # remove dots under letters
-#   text = re.sub("\u0323", "", text)
+  # d = {ord('\N{COMBINING ACUTE ACCENT}'):None}
+  # text = ud.normalize('NFD', text).translate(d)
 
-#   # remove  ͜
-#   text = re.sub("͜", "", text)
+  # lunate sigmas at the end of the word
+  text = re.sub(r'c(?!\w)', 'ς', text)
+  # all remaining lunate sigmas
+  text = re.sub(r'ϲ', 'σ', text)
+  text = re.sub(r'Ϲ', 'Σ', text)
 
-#   # replace ⸏word or ⸐word with [UNK]
-#   text = re.sub("[⸏⸐][\u0370-\u03ff\u1f00-\u1fff\[\]']*", " [UNK] ", text)
+  # remove titles should I do this?
 
-#   # remove meter suggestions e.g. <–⏑⏑–⏓>
-#   text = re.sub("<[–⏔⏕⏓⏑]*>[\u0370-\u03ff\u1f00-\u1fff\']*", " [UNK] ", text)
+  # remove dots under letters
+  text = re.sub("\u0323", "", text)
 
-#   # remove meter suggestions not in arrows
-#   text = re.sub('[–⏔⏓⏑⏕]', "", text)
+  # remove  ͜
+  text = re.sub("͜", "", text)
+
+  # replace ⸏word or ⸐word with [UNK]
+  text = re.sub("[⸏⸐][\u0370-\u03ff\u1f00-\u1fff\[\]']*", " [UNK] ", text)
+
+  # remove meter suggestions e.g. <–⏑⏑–⏓>
+  text = re.sub("<[–⏔⏕⏓⏑]*>[\u0370-\u03ff\u1f00-\u1fff\']*", " [UNK] ", text)
+
+  # remove meter suggestions not in arrows
+  text = re.sub('[–⏔⏓⏑⏕]', "", text)
   
-#   # replace words with internal ellipses
-#   text = re.sub(f'[\u0370-\u03ff\u1f00-\u1fff\']+[\.]+((\[[" "\.]*\])|[\u0370-\u03ff\u1f00-\u1fff\'\.\[])+', " [UNK] ", text)
+  # replace words with internal ellipses
+  text = re.sub(f'[\u0370-\u03ff\u1f00-\u1fff\']+[\.]+((\[[" "\.]*\])|[\u0370-\u03ff\u1f00-\u1fff\'\.\[])+', " [UNK] ", text)
 
-#   # replace ellipses all by themselves with[UNK]
-#   text = re.sub('" "\.{2,}" "', " [UNK] ", text)
+  # replace ellipses all by themselves with[UNK]
+  text = re.sub('" "\.{2,}" "', " [UNK] ", text)
 
-#   # remove words starting and ending with [ ]
-#   text = re.sub(f'[" "]\[[" ".]*\][\u0370-\u03ff\u1f00-\u1fff.\']*\[[" ".]*\]', " [UNK] ", text)
+  # remove words starting and ending with [ ]
+  text = re.sub(f'[" "]\[[" ".]*\][\u0370-\u03ff\u1f00-\u1fff.\']*\[[" ".]*\]', " [UNK] ", text)
 
-#   # remove words starting with [ ]
-#   text = re.sub(f'\[[" ".]*\][\u0370-\u03ff\u1f00-\u1fff\.\'\[\]]*', " [UNK] ", text)
+  # remove words starting with [ ]
+  text = re.sub(f'\[[" ".]*\][\u0370-\u03ff\u1f00-\u1fff\.\'\[\]]*', " [UNK] ", text)
 
-#   # remove words ending with [ ]
-#   text = re.sub(f'[\u0370-\u03ff\u1f00-\u1fff.\']*\[[" ".]*\]', " [UNK] ", text)
+  # remove words ending with [ ]
+  text = re.sub(f'[\u0370-\u03ff\u1f00-\u1fff.\']*\[[" ".]*\]', " [UNK] ", text)
 
-#   # replace words with internal [ ]
-#   text = re.sub('[\u0370-\u03ff\u1f00-\u1fff\.\[\]\']+(\[[" "\.]*\])+((\[[" "\.]*\])|[\u0370-\u03ff\u1f00-\u1fff\'\.\[\]])*', " [UNK] ", text)
+  # replace words with internal [ ]
+  text = re.sub('[\u0370-\u03ff\u1f00-\u1fff\.\[\]\']+(\[[" "\.]*\])+((\[[" "\.]*\])|[\u0370-\u03ff\u1f00-\u1fff\'\.\[\]])*', " [UNK] ", text)
 
-#   # remove words ending with [
-#   text = re.sub(f'[\u0370-\u03ff\u1f00-\u1fff\.\']+\[\s', "[UNK]", text)
+  # remove words ending with [
+  text = re.sub(f'[\u0370-\u03ff\u1f00-\u1fff\.\']+\[\s', "[UNK]", text)
 
-#   # remove elipses beginning words e.g. .word
-#   text = re.sub('[\.]+[\u0370-\u03ff\u1f00-\u1fff.\'\[\]]', " [UNK] ", text)
+  # remove elipses beginning words e.g. .word
+  text = re.sub('[\.]+[\u0370-\u03ff\u1f00-\u1fff.\'\[\]]', " [UNK] ", text)
 
-#   # remove daggers of desparation
-#   # text = re.sub('†.*†', " [UNK] ", text)
+  # remove daggers of desparation
+  # text = re.sub('†.*†', " [UNK] ", text)
 
-#   # remove any remaining angle brackets < >
-#   text = re.sub(f'[<>]', "", text)
+  # remove any remaining angle brackets < >
+  text = re.sub(f'[<>]', "", text)
 
-#   # remove any remaining square brackets []
-#   text = re.sub(f'[\[\]]', "", text)
+  # remove any remaining square brackets []
+  text = re.sub(f'[\[\]]', "", text)
 
-#   # add back on the parentheses here
-#   text = re.sub('(UNK)', '[UNK]', text)
+  # add back on the parentheses here
+  text = re.sub('(UNK)', '[UNK]', text)
 
-#   # remove dashes that represent unfinished words
-#   # e.g. word-? 
-#   text = re.sub('[\u0370-\u03ff\u1f00-\u1fff\']+-\?', " [UNK] ", text)
+  # remove dashes that represent unfinished words
+  # e.g. word-? 
+  text = re.sub('[\u0370-\u03ff\u1f00-\u1fff\']+-\?', " [UNK] ", text)
 
-#   # unsplit words across lines
-#   text = re.sub('-\n[\s]*', "", text)
+  # unsplit words across lines
+  text = re.sub('-\n[\s]*', "", text)
 
-#   # remove (= #)
-#   text = re.sub(f'[\([=" "1-9]*\)]', "", text)
+  # remove (= #)
+  text = re.sub(f'[\([=" "1-9]*\)]', "", text)
 
-#   # remove parentheses around words
-#   text = re.sub(f'[\(\)]', "", text)
+  # remove parentheses around words
+  text = re.sub(f'[\(\)]', "", text)
 
-#   # remove weird characters:
-#   text = re.sub("(([1-9]+,)|([1-9]+-)|(—\s—)|[†|>⸖※<0-9⌞⌟⊗⟦⟧»*\\\{\}])", "", text)
-#   random_character_list = ['†', '|', '>', '⸖', '※', '<', '1', '2', '0', '7', '5', '4', '8', '3', '⌞', '⌟' , '9', '6', '⊗', '⟦', '⟧', '»', '*', '{', '}']
+  # remove weird characters:
+  text = re.sub("(([1-9]+,)|([1-9]+-)|(—\s—)|[†|>⸖※<0-9⌞⌟⊗⟦⟧»*\\\{\}])", "", text)
+  random_character_list = ['†', '|', '>', '⸖', '※', '<', '1', '2', '0', '7', '5', '4', '8', '3', '⌞', '⌟' , '9', '6', '⊗', '⟦', '⟧', '»', '*', '{', '}']
   
-#   return text
+  return text
 
 # def all_possibilities(text1, text2, num_tokens, right=False):
 #   fix = ''
@@ -297,4 +374,54 @@
 
 #   return strings
 
+
+
+
+import sagemaker
+import json
+import boto3
+from sagemaker.huggingface import HuggingFaceModel
+
+
+import nltk
+def get_top_suggestions(suggestions, og_text):
+  keep_suggestions = []
+  for s in suggestions:
+    print(s.keys())
+    s['token_str'] = re.sub('##', '', s['token_str'])
+    print(nltk.edit_distance(og_text, s['token_str']), og_text, s['token_str'])
+    if nltk.edit_distance(og_text, s['token_str']) <= 1:
+      keep_suggestions.append({"word": s['token_str'], "probability": s['score']})
+
+  return keep_suggestions
+
+def get_results(text1, text2, og_text, num_toks):
+
+  runtime = boto3.client('runtime.sagemaker', aws_access_key_id='AKIAXFTBDRZBXN6ZSUUS',
+      aws_secret_access_key='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', region_name='us-east-1')
+  # role = iam_client.get_role(RoleName='SageMakerLogionClient')['Role']['Arn']
+  # sess = sagemaker.Session()
+  text1 = '''Χρονογραφία πονηθεῖσα τῷ πανσόφῳ μοναχῷ Μιχαὴλ τῷ ὑπερτίμῳ, ἱστοροῦσα'''
+  text2 = ''' πράξεις τῶν βασιλέων, τοῦ τε Βασιλείου καὶ Κωνσταντίνου τῶν πορφυρογεννήτων, τοῦ τε μετ' αὐτοὺς Ῥωμανοῦ τοῦ Ἀργυροπώλου, τοῦ μετ' ἐκεῖνον Μιχαὴλ τοῦ '''
+  text1 = clean_text(text1)
+  text2 = clean_text(text2)
+  payload = {
+    "inputs": f'{text1} [MASK] [MASK] {text2}',
+    "parameters": {"top_k": 1000}
+  }
+  payload_json = json.dumps(payload)
+
+  result  = runtime.invoke_endpoint(
+      EndpointName='huggingface-pytorch-inference-2023-09-09-00-41-50-199',
+      Body=payload_json,
+      ContentType='application/json'
+  )
+  # Parse the resul
+  response_body = result['Body'].read()
+  response_json = json.loads(response_body)
+  og_text = clean_text(og_text)
+  # Handle the response as needed
+  top_results = get_top_suggestions(response_json, og_text)
+  print(top_results)
+  return top_results
 
