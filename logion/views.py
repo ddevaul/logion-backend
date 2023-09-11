@@ -8,7 +8,8 @@ from .serializers import (AuthorSerializer, TextSerializer, TextTitleSerializer,
 from .models import Author, Text, Suggestion, Comment, CustomUser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import exception_handler
-from .bert import all_possibilities, remove_diacritics, get_results, get_desi_result, get_results_2
+# from .bert import all_possibilities, remove_diacritics, get_results, get_desi_result, get_results_2
+from .bert import get_results_2
 from .getcontext import get_context
 import os
 import requests
