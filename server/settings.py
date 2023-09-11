@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
-# import django_heroku
+import django_heroku
 
 
 load_dotenv()
@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://logion-backend-9dd1f22b3713.herokuapp.com', 'ec2-100-27-5-254.compute-1.amazonaws.com']
+ALLOWED_HOSTS = ['https://logion-backend-9dd1f22b3713.herokuapp.com', 'ec2-100-27-5-254.compute-1.amazonaws.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -112,12 +112,12 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 524288000
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "logiondb2",
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": "logiondb2",
+#     }
+# }
 
 # if not DEBUG: 
 #     name = os.environ.get('DATABASE')
@@ -186,19 +186,19 @@ CORS_ALLOWED_ORIGINS = ['https://logion-princeton.vercel.app', 'http://localhost
 AUTH_USER_MODEL = 'logion.CustomUser'
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': '<DATABASE>',
-#         'USER': '<USER>',
-#         'PASSWORD': '<PASSWORD>',
-#         'HOST': '<HOST>',
-#         'PORT': '5432',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': '<DATABASE>',
+        'USER': '<USER>',
+        'PASSWORD': '<PASSWORD>',
+        'HOST': '<HOST>',
+        'PORT': '5432',
+    }
+}
   
 # Optional section to include if 
 # you want to include static files
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# STATIC_URL = '/static/'
-# django_heroku.settings(locals())
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+django_heroku.settings(locals())

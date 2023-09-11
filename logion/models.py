@@ -35,6 +35,7 @@ class Suggestion(models.Model):
     number_ok = models.IntegerField(default=0)
     number_bad = models.IntegerField(default=0)
     suggested_text = models.TextField(null=False)
+    probability = models.FloatField(null=False)
     start_index = models.IntegerField(null=False)
     end_index = models.IntegerField(null=False)
     chunk = models.IntegerField(null = False)

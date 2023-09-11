@@ -25,7 +25,7 @@ class TextSerializer(serializers.ModelSerializer):
     # author = AuthorSerializer()
     class Meta:
         model = Text
-        fields = ('id', 'body')
+        fields = ('id', 'body', 'title')
 
 
 class TextTitleSerializer(serializers.ModelSerializer):
@@ -43,7 +43,7 @@ class SuggestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Suggestion
-        fields = ('id', 'submitter', 'text', 'number_good', 'number_ok', 'number_bad', 'suggested_text', 'original_text', 'start_index', 'end_index')
+        fields = ('id', 'submitter', 'probability', 'text', 'number_good', 'number_ok', 'number_bad', 'suggested_text', 'original_text', 'start_index', 'end_index')
         # depth=2
 
 class CommentSerializer(serializers.ModelSerializer):
